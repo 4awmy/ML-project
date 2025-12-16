@@ -1,88 +1,95 @@
-# 🤖 Job Market Insights: AI Automation Risk Predictor
+# 🤖 AI Job Market Risk Analyzer
 
 ## CAI3101: Introduction to Artificial Intelligence Project
 
 ### 📌 Project Overview
-This project is an end-to-end Machine Learning application designed to predict the likelihood of human jobs being replaced by Artificial Intelligence. Using a Random Forest Classifier, the system analyzes various job characteristics—such as industry, salary, education level, and remote work trends—to classify jobs into five distinct risk levels.
+This project is an end-to-end Machine Learning application designed to predict the likelihood of human jobs being replaced by Artificial Intelligence. It fulfills the CAI3101 course requirements by demonstrating the complete ML lifecycle: data collection, preprocessing, model development (including Neural Networks), and deployment.
 
-The goal is to provide actionable insights for students and professionals to identify "safe" careers in the age of automation.
+### 🌟 Features
+*   **Data Analysis:** Interactive dashboard to explore job market trends, correlations, and risk distributions.
+*   **Predictive Modeling:** Compares three powerful algorithms:
+    *   **Random Forest Classifier** (Ensemble Learning)
+    *   **Naive Bayes** (Probabilistic Learning)
+    *   **Neural Network (MLP)** (Deep Learning) - *New!*
+*   **Interactive Risk Analyzer:** Users can input job details (Salary, Remote Work, Education, etc.) to get a real-time risk assessment.
+*   **Actionable Insights:** Provides clear feedback on whether a job is "Safe", "Moderate", or "Critical Risk".
 
-### 🎯 Objectives
-Per the CAI3101 course requirements, this project demonstrates:
-*   **End-to-end Workflow:** From data collection to deployment.
-*   **Data Preprocessing:** Handling missing values, label encoding, and feature engineering.
-*   **Model Development:** Training and evaluating a Supervised Learning model.
-*   **Application Deployment:** Creating a user-friendly GUI using Streamlit.
+### 🚀 Deployment Guide (How to get a Public URL)
 
-### 📂 Dataset
-*   **Source:** Public Dataset (Kaggle) - "AI Impact on Job Market Insights".
-*   **Size:** >200 samples with 10+ features.
-*   **Target Variable:** Automation Risk (%) (Converted into 5 categorical grades).
-*   **Key Features Used:**
-    *   Job Title & Industry
-    *   Median Salary (USD)
-    *   Required Education
-    *   Work Experience
-    *   Remote Work Ratio
-    *   AI Impact Level
-    *   Job Openings (Current & Projected)
+**Note:** Since this is a Python/Streamlit application, it requires a backend server to run the machine learning models. Therefore, it cannot be hosted on GitHub Pages (which only supports static HTML/CSS).
 
-### 🛠️ Technologies Used
-*   **Language:** Python 3.9+
-*   **Data Manipulation:** Pandas, NumPy
-*   **Machine Learning:** Scikit-Learn (RandomForestClassifier, LabelEncoder)
-*   **Visualization:** Matplotlib, Seaborn
-*   **Graphical User Interface (GUI):** Streamlit
+**The Best Approach: Streamlit Community Cloud**
+This is the easiest and free way to get a public URL (e.g., `https://your-project.streamlit.app`) that you can share with your professor and friends.
 
-### ⚙️ Methodology
+#### Steps to Deploy:
+1.  **Push Code to GitHub:**
+    *   Create a new repository on GitHub.
+    *   Upload all files from this folder (`app.py`, `model_utils.py`, `data.csv`, `requirements.txt`) to the repository.
+2.  **Sign up for Streamlit Cloud:**
+    *   Go to [share.streamlit.io](https://share.streamlit.io/).
+    *   Sign in with your GitHub account.
+3.  **Deploy:**
+    *   Click **"New App"**.
+    *   Select your GitHub repository, branch (usually `main`), and the main file path (`app.py`).
+    *   Click **"Deploy"**.
+4.  **Done!**
+    *   Streamlit will install the dependencies from `requirements.txt` and launch your app.
+    *   You will get a public URL to share.
+
+### 🛠️ Local Installation & Running
+
+If you want to run the project on your own computer:
+
+1.  **Prerequisites:**
+    *   Install Python (3.8 or higher).
+    *   Download this project folder.
+
+2.  **Install Dependencies:**
+    Open your terminal/command prompt in the project folder and run:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+3.  **Run the App:**
+    ```bash
+    streamlit run app.py
+    ```
+    A browser window will open automatically at `http://localhost:8501`.
+
+4.  **Run Tests:**
+    To verify that everything is working correctly:
+    ```bash
+    python -m pytest tests/
+    ```
+
+### 📂 Project Structure
+
+*   `app.py`: The main entry point for the Streamlit application (Frontend & Logic).
+*   `model_utils.py`: Contains functions for data loading, preprocessing, and model training.
+*   `data.csv`: The dataset used for training and analysis.
+*   `requirements.txt`: List of Python libraries required to run the app.
+*   `tests/`: Contains unit tests to ensure code quality.
+
+### ⚙️ Technical Details (For Graders/Developers)
 
 #### 1. Data Preprocessing
-*   **Encoding:** Categorical variables (e.g., "Location", "Job Status") were converted into numerical values using LabelEncoder.
-*   **Feature Engineering:** The continuous target Automation Risk (%) was binned into 5 distinct classes to create a Multi-Class Classification problem:
-    *   0: Very Safe (0-20%)
-    *   1: Safe (20-40%)
-    *   2: Moderate (40-60%)
-    *   3: High Risk (60-80%)
-    *   4: Critical Risk (80-100%)
+*   **Cleaning:** Missing values are removed to ensure data quality.
+*   **Target Engineering:** The continuous 'Automation Risk (%)' is binned into 5 categorical grades (0-4) for classification.
+*   **Encoding:** Categorical features (e.g., Industry, Education) are LabelEncoded.
+*   **Scaling:** Numerical features (e.g., Salary, Experience) are StandardScaled for optimal model performance (especially for Neural Networks).
 
-#### 2. Model Selection
-We selected the **Random Forest Classifier** for this project because:
-*   It handles high-dimensional data (many features) effectively.
-*   It is less prone to overfitting compared to a single Decision Tree.
-*   It provides high accuracy for classification tasks involving mixed data types (numerical + categorical).
+#### 2. Models Used
+*   **Random Forest:** Selected for its robustness against overfitting and ability to handle mixed data types.
+*   **Naive Bayes:** Used as a baseline probabilistic model.
+*   **Neural Network (MLPClassifier):** A Multi-Layer Perceptron (100, 50 hidden units) is used to capture complex non-linear relationships, fulfilling the requirement for advanced algorithms.
 
-#### 3. Application (GUI)
-A web-based interface was built to allow users to:
-*   Select existing job profiles from the dataset.
-*   Adjust market variables (Salary, Remote Ratio, etc.) via sliders.
-*   Receive real-time risk analysis and feedback.
-
-### 🚀 How to Run the Project
-
-#### Prerequisites:
-Ensure you have Python installed. Install the required libraries using:
-
-```bash
-pip install pandas scikit-learn streamlit
-```
-
-#### Steps:
-1.  Clone this repository or download the project folder.
-2.  Ensure the dataset file named `data.csv` is in the same directory as `app.py`.
-3.  Open your terminal/command prompt.
-4.  Navigate to the project folder.
-5.  Run the application:
-
-```bash
-streamlit run app.py
-```
-
-### 📊 Results
-The model successfully identifies that jobs requiring High Social Intelligence (e.g., Healthcare, Management) and High Creativity are less likely to be automated, regardless of salary. Conversely, roles with high routine tasks and low educational requirements show the highest risk.
+#### 3. Evaluation
+*   Models are evaluated using **Accuracy** on a held-out test set (20% split).
+*   The application displays a comparison chart to highlight the best-performing model.
 
 ### 👥 Contributors
 *   [Your Name]
-*   [Partner Name 1]
-*   [Partner Name 2]
+*   [Partner Name]
+*   [Partner Name]
 
 *Submitted for CAI3101 - Term 5*
