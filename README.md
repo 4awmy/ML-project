@@ -7,85 +7,37 @@ This project is an end-to-end Machine Learning application designed to predict t
 
 ### 🌟 Features
 *   **Data Analysis:** Interactive dashboard to explore job market trends, correlations, and risk distributions.
-*   **Predictive Modeling:** Compares three powerful algorithms:
+*   **Predictive Modeling:** Compares four powerful algorithms:
     *   **Random Forest Classifier** (Ensemble Learning)
     *   **Naive Bayes** (Probabilistic Learning)
-    *   **Neural Network (MLP)** (Deep Learning) - *New!*
+    *   **Decision Tree** (Logic-based Learning)
+    *   **Neural Network (MLP)** (Deep Learning) - *Advanced Requirement!*
 *   **Interactive Risk Analyzer:** Users can input job details (Salary, Remote Work, Education, etc.) to get a real-time risk assessment.
 *   **Actionable Insights:** Provides clear feedback on whether a job is "Safe", "Moderate", or "Critical Risk".
 
-### 🚀 Deployment Guide (How to get a Public URL)
+### 📚 Documentation
+We have prepared detailed documentation for every aspect of this project:
 
-**Note:** Since this is a Python/Streamlit application, it requires a backend server to run the machine learning models. Therefore, it cannot be hosted on GitHub Pages (which only supports static HTML/CSS).
+1.  **[Project Requirements Explained](REQUIREMENTS_EXPLAINED.md)** - Read this for the **Written Report** and **PowerPoint**.
+2.  **[Installation Guide](INSTALLATION_GUIDE.md)** - Step-by-step instructions to run the project locally.
+3.  **[Deployment Guide](DEPLOYMENT_GUIDE.md)** - How to get a public URL using Streamlit Community Cloud (GitHub).
+4.  **[Gap Analysis](GAP_ANALYSIS.md)** - A checklist of how we met all course requirements.
 
-**The Best Approach: Streamlit Community Cloud**
-This is the easiest and free way to get a public URL (e.g., `https://your-project.streamlit.app`) that you can share with your professor and friends.
+### 🚀 Quick Start (Local)
 
-#### Steps to Deploy:
-1.  **Push Code to GitHub:**
-    *   Create a new repository on GitHub.
-    *   Upload all files from this folder (`app.py`, `model_utils.py`, `data.csv`, `requirements.txt`) to the repository.
-2.  **Sign up for Streamlit Cloud:**
-    *   Go to [share.streamlit.io](https://share.streamlit.io/).
-    *   Sign in with your GitHub account.
-3.  **Deploy:**
-    *   Click **"New App"**.
-    *   Select your GitHub repository, branch (usually `main`), and the main file path (`app.py`).
-    *   Click **"Deploy"**.
-4.  **Done!**
-    *   Streamlit will install the dependencies from `requirements.txt` and launch your app.
-    *   You will get a public URL to share.
-
-### 🛠️ Local Installation & Running
-
-If you want to run the project on your own computer:
-
-1.  **Prerequisites:**
-    *   Install Python (3.8 or higher).
-    *   Download this project folder.
-
-2.  **Install Dependencies:**
-    Open your terminal/command prompt in the project folder and run:
+1.  **Install Dependencies:**
     ```bash
     pip install -r requirements.txt
     ```
-
-3.  **Run the App:**
+2.  **Run the App:**
     ```bash
     streamlit run app.py
     ```
-    A browser window will open automatically at `http://localhost:8501`.
 
-4.  **Run Tests:**
-    To verify that everything is working correctly:
-    ```bash
-    python -m pytest tests/
-    ```
-
-### 📂 Project Structure
-
-*   `app.py`: The main entry point for the Streamlit application (Frontend & Logic).
-*   `model_utils.py`: Contains functions for data loading, preprocessing, and model training.
-*   `data.csv`: The dataset used for training and analysis.
-*   `requirements.txt`: List of Python libraries required to run the app.
-*   `tests/`: Contains unit tests to ensure code quality.
-
-### ⚙️ Technical Details (For Graders/Developers)
-
-#### 1. Data Preprocessing
-*   **Cleaning:** Missing values are removed to ensure data quality.
-*   **Target Engineering:** The continuous 'Automation Risk (%)' is binned into 5 categorical grades (0-4) for classification.
-*   **Encoding:** Categorical features (e.g., Industry, Education) are LabelEncoded.
-*   **Scaling:** Numerical features (e.g., Salary, Experience) are StandardScaled for optimal model performance (especially for Neural Networks).
-
-#### 2. Models Used
-*   **Random Forest:** Selected for its robustness against overfitting and ability to handle mixed data types.
-*   **Naive Bayes:** Used as a baseline probabilistic model.
-*   **Neural Network (MLPClassifier):** A Multi-Layer Perceptron (100, 50 hidden units) is used to capture complex non-linear relationships, fulfilling the requirement for advanced algorithms.
-
-#### 3. Evaluation
-*   Models are evaluated using **Accuracy** on a held-out test set (20% split).
-*   The application displays a comparison chart to highlight the best-performing model.
+### ⚙️ Technical Highlights
+*   **Refactored Codebase:** Logic is separated into `model_utils.py` for cleaner code and better caching.
+*   **Unit Tests:** comprehensive tests in `tests/` ensure data integrity and model stability.
+*   **Advanced ML:** Implements Multi-Layer Perceptron (MLP) for non-linear pattern recognition.
 
 ### 👥 Contributors
 *   [Your Name]
