@@ -23,6 +23,43 @@ We have prepared detailed documentation for every aspect of this project:
 3.  **[Deployment Guide](docs/DEPLOYMENT_GUIDE.md)** - How to get a public URL using Streamlit Community Cloud (GitHub).
 4.  **[Gap Analysis](docs/GAP_ANALYSIS.md)** - A checklist of how we met all course requirements.
 
+### 🛠️ Libraries & Imports Explained
+
+The project uses several powerful Python libraries. Here is a breakdown of why each one is used:
+
+*   **`streamlit`**: The core framework used to build the web application. It allows us to create interactive UIs (buttons, sliders, charts) using simple Python code, without needing HTML/CSS/JS.
+*   **`pandas`**: The standard library for data manipulation. We use it to load the CSV file (`pd.read_csv`), clean data (`dropna`), and handle the table-like structure of our dataset.
+*   **`seaborn` & `matplotlib.pyplot`**: Visualization libraries used to generate static charts, specifically the **Correlation Heatmap**. `seaborn` makes the heatmap look good, while `matplotlib` provides the underlying figure.
+*   **`plotly.express`**: An interactive plotting library. We use it for the **Risk Distribution Histogram** because it allows users to hover over bars to see exact numbers.
+*   **`sklearn.model_selection.train_test_split`**: A utility to split our data into two parts: Training (80%) and Testing (20%). This ensures we evaluate our models on data they haven't seen before.
+*   **`sklearn.metrics.accuracy_score`**: The metric used to grade our models. It simply calculates what percentage of predictions were correct.
+*   **`sklearn.ensemble.RandomForestClassifier`**: A powerful model that uses many decision trees to vote on the outcome. Great for high accuracy.
+*   **`sklearn.naive_bayes.GaussianNB`**: A probabilistic model based on Bayes' Theorem. Fast and simple, often used as a baseline.
+*   **`sklearn.tree.DecisionTreeClassifier`**: A model that learns simple if-then rules. Easy to visualize and explain.
+*   **`sklearn.neural_network.MLPClassifier`**: A Multi-Layer Perceptron (Artificial Neural Network). It mimics the human brain's structure to learn complex, non-linear patterns in the data.
+*   **`sklearn.preprocessing.LabelEncoder`**: Converts text categories (e.g., "Engineer", "Doctor") into numbers (0, 1) so the models can process them.
+*   **`sklearn.preprocessing.StandardScaler`**: Normalizes numerical data (like Salary) so that all features have a mean of 0. This is crucial for the Neural Network to learn effectively.
+
+### 📂 File Structure & Purpose
+
+Here is a detailed explanation of every file in the repository:
+
+*   **`app.py`**: **The Frontend.** This is the main entry point of the application. It handles:
+    *   Displaying the Streamlit UI (tabs, sidebar, charts).
+    *   Taking user input.
+    *   Calling `model_utils` to get predictions.
+    *   Displaying results to the user.
+*   **`model_utils.py`**: **The Backend Logic.** This file contains the "business logic" to keep `app.py` clean. It handles:
+    *   Loading and cleaning the data from CSV.
+    *   Training the machine learning models.
+    *   Encoding and scaling features.
+    *   It uses `@st.cache_data` to ensure we don't re-train models every time the user clicks a button.
+*   **`data.csv`**: **The Dataset.** Contains the rows of job data (Salary, Industry, Risk %, etc.) used to train our AI.
+*   **`requirements.txt`**: **Dependency List.** Tells the server (or your computer) which Python libraries to install to run the app.
+*   **`tests/`**: **Quality Assurance.** A folder containing unit tests (e.g., `test_app.py`) to verify that the data loads correctly and models train without errors.
+*   **`docs/`**: **Documentation.** Contains detailed guides for Installation, Deployment, and Course Requirements.
+*   **`.gitignore`**: **Configuration.** Tells Git which files to ignore (like temporary `__pycache__` files) to keep the repository clean.
+
 ### 🔍 Codebase Deep Dive (How it Works)
 
 This section explains the internal logic of the application for developers and instructors. The code is split into two main files to follow software engineering best practices (Separation of Concerns).
