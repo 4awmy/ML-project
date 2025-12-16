@@ -106,7 +106,10 @@ This is the Streamlit application that users interact with.
     ```bash
     streamlit run app.py
     ```
-
+2.  **Running the app online :**
+    ```bash
+    [https://xoa-ml.streamlit.app/]
+    ```
 ### ⚙️ Technical Highlights
 *   **Refactored Codebase:** Logic is separated into `model_utils.py` for cleaner code and better caching.
 *   **Unit Tests:** comprehensive tests in `tests/` ensure data integrity and model stability.
