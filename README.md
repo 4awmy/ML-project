@@ -18,10 +18,10 @@ This project is an end-to-end Machine Learning application designed to predict t
 ### 📚 Documentation
 We have prepared detailed documentation for every aspect of this project:
 
-1.  **[Project Requirements Explained](REQUIREMENTS_EXPLAINED.md)** - Read this for the **Written Report** and **PowerPoint**.
-2.  **[Installation Guide](INSTALLATION_GUIDE.md)** - Step-by-step instructions to run the project locally.
-3.  **[Deployment Guide](DEPLOYMENT_GUIDE.md)** - How to get a public URL using Streamlit Community Cloud (GitHub).
-4.  **[Gap Analysis](GAP_ANALYSIS.md)** - A checklist of how we met all course requirements.
+1.  **[Project Requirements Explained](docs/REQUIREMENTS_EXPLAINED.md)** - Read this for the **Written Report** and **PowerPoint**.
+2.  **[Installation Guide](docs/INSTALLATION_GUIDE.md)** - Step-by-step instructions to run the project locally.
+3.  **[Deployment Guide](docs/DEPLOYMENT_GUIDE.md)** - How to get a public URL using Streamlit Community Cloud (GitHub).
+4.  **[Gap Analysis](docs/GAP_ANALYSIS.md)** - A checklist of how we met all course requirements.
 
 ### 🚀 Quick Start (Local)
 
