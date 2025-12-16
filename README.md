@@ -40,8 +40,7 @@ We have prepared detailed documentation for every aspect of this project:
 *   **Advanced ML:** Implements Multi-Layer Perceptron (MLP) for non-linear pattern recognition.
 
 ### 👥 Contributors
-*   [Your Name]
-*   [Partner Name]
-*   [Partner Name]
-
+*   Omar Hossam ElDin Hamdy Gad
+*   Mohamed Ahmed Ezzat Mohamed Elsayed
+*   Belal Ashraf Sobhy Mohamed Hassan
 *Submitted for CAI3101 - Term 5*
