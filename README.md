@@ -113,7 +113,8 @@ This is the Streamlit application that users interact with.
 *   **Advanced ML:** Implements Multi-Layer Perceptron (MLP) for non-linear pattern recognition.
 
 ### 👥 Contributors
-*   Omar Hossam ElDin Hamdy Gad
-*   Mohamed Ahmed Ezzat Mohamed Elsayed
-*   Belal Ashraf Sobhy Mohamed Hassan
+*   [Your Name]
+*   [Partner Name]
+*   [Partner Name]
+
 *Submitted for CAI3101 - Term 5*
