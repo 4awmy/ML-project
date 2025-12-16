@@ -174,8 +174,12 @@ def main():
                         # Ensure correct order of features
                         final_input_df = input_df[feature_names].copy()
 
+                        # Identify which columns to scale that actually exist in the input
+                        cols_to_scale = [c for c in NUM_COLS_TO_SCALE if c in final_input_df.columns]
+
                         # Scale using the imported constant to ensure consistency
-                        final_input_df[NUM_COLS_TO_SCALE] = scaler.transform(final_input_df[NUM_COLS_TO_SCALE])
+                        if cols_to_scale:
+                            final_input_df[cols_to_scale] = scaler.transform(final_input_df[cols_to_scale])
 
                         # Predict
                         prediction_grade = active_model.predict(final_input_df)[0]
