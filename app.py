@@ -1,160 +1,227 @@
 import streamlit as st
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import LabelEncoder
+import seaborn as sns
+import matplotlib.pyplot as plt
+import plotly.express as px
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+from model_utils import load_and_process_data, train_models, NUM_COLS_TO_SCALE
 
 # ==========================================
 # 🚨 PATH CONFIGURATION
 # ==========================================
-FILE_PATH = r"E:\College\Term 5\AI\Dataset\AI_Project\data.csv"
+FILE_PATH = "data.csv"
 
 # --- 1. PAGE SETUP ---
-st.set_page_config(page_title="Advanced Job Risk AI", layout="wide")
-st.title("🤖 AI Job Market Risk Analyzer")
-st.markdown("### Comprehensive Analysis based on Industry, Location, and Market Trends")
+st.set_page_config(page_title="Advanced Job Risk AI", layout="wide", page_icon="🤖")
 
-# --- 2. LOAD DATA & TRAIN MODEL ---
-@st.cache_data
-def get_model():
-    try:
-        df = pd.read_csv(FILE_PATH)
-    except FileNotFoundError:
-        return None, None, None
-    except Exception as e:
-        st.error(f"Error reading file: {e}")
-        return None, None, None
+def main():
+    st.title("🤖 AI Job Market Risk Analyzer")
+    st.markdown("### CAI3101 Project: End-to-End Machine Learning Workflow")
+    st.markdown("""
+    This application predicts the likelihood of job automation using Machine Learning.
+    It demonstrates the full ML lifecycle: **Data Processing -> Model Training -> Evaluation -> Deployment**.
+    """)
 
-    # --- PREPROCESSING ---
-    encoders = {}
-    
-    # Categorical Columns to Encode
-    cat_cols = ['Job Title', 'Industry', 'Job Status', 'AI Impact Level', 'Required Education', 'Location']
-    
-    for col in cat_cols:
-        if col in df.columns:
-            # Force everything to string to avoid errors
-            df[col] = df[col].astype(str)
-            le = LabelEncoder()
-            df[col] = le.fit_transform(df[col])
-            encoders[col] = le
-        else:
-            encoders[col] = LabelEncoder() # Empty dummy
+    # Load Data
+    df_original, df_processed, feature_names, encoders, scaler = load_and_process_data(FILE_PATH)
 
-    # Create Target (5 Grades of Risk)
-    if 'Automation Risk (%)' in df.columns:
-        def get_risk_grade(risk):
-            if risk <= 20: return 0  # Very Safe
-            elif risk <= 40: return 1 # Safe
-            elif risk <= 60: return 2 # Moderate
-            elif risk <= 80: return 3 # High Risk
-            else: return 4            # Critical Risk
-        df['Risk_Grade'] = df['Automation Risk (%)'].apply(get_risk_grade)
-    else:
-        st.error("Error: Target column 'Automation Risk (%)' not found.")
-        return None, None, None
-    
-    # Define Features
-    feature_cols = [
-        'Job Title', 'Industry', 'Job Status', 'AI Impact Level', 
-        'Median Salary (USD)', 'Required Education', 'Experience Required (Years)', 
-        'Job Openings (2024)', 'Projected Openings (2030)', 'Remote Work Ratio (%)', 'Location'
-    ]
-    
-    # Ensure we only use columns that exist
-    final_features = [c for c in feature_cols if c in df.columns]
-    
-    X = df[final_features]
-    y = df['Risk_Grade']
-    
-    # Train Model
-    model = RandomForestClassifier(n_estimators=100, random_state=42)
-    model.fit(X, y)
-    
-    return model, encoders, final_features
+    if df_original is None:
+        st.error(f"Error: Could not load data from {FILE_PATH}. Please check if the file exists and has the correct format.")
+        st.stop()
 
-model, encoders, feature_names = get_model()
+    # --- TABS FOR PROJECT REQUIREMENTS ---
+    tab1, tab2, tab3 = st.tabs(["📊 Data Understanding", "⚙️ Model Development & Eval", "🚀 Risk Prediction"])
 
-# --- 3. SIDEBAR INPUTS ---
-if model is None:
-    st.error(f"🚨 CRITICAL ERROR: Could not find 'data.csv' at path: {FILE_PATH}")
-    st.stop()
+    # ==========================================
+    # TAB 1: DATA UNDERSTANDING (Requirement: Statistics & Viz)
+    # ==========================================
+    with tab1:
+        st.header("1. Data Understanding & Statistics")
+        st.info("Requirement: Describe dataset source, context, summary statistics, and visualizations.")
 
-st.sidebar.header("1. Job Profile")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.subheader("Dataset Context")
+            st.write(f"**Total Samples:** {df_original.shape[0]}")
+            st.write(f"**Total Features:** {df_original.shape[1]}")
+            with st.expander("View Raw Data"):
+                st.dataframe(df_original.head(10))
 
-# Helper function to get sorted options safely
-def get_options(col_name):
-    if col_name in encoders and hasattr(encoders[col_name], 'classes_'):
-        return sorted(encoders[col_name].classes_)
-    return ["Unknown"]
+        with col2:
+            st.subheader("Summary Statistics")
+            st.dataframe(df_original.describe())
 
-# Inputs
-selected_job = st.sidebar.selectbox("Job Title", get_options('Job Title'))
-selected_industry = st.sidebar.selectbox("Industry", get_options('Industry'))
-selected_status = st.sidebar.selectbox("Job Status", get_options('Job Status'))
-selected_edu = st.sidebar.selectbox("Required Education", get_options('Required Education'))
-selected_loc = st.sidebar.selectbox("Location", get_options('Location'))
+        st.subheader("Data Visualizations")
+        col_viz1, col_viz2 = st.columns(2)
 
-st.sidebar.header("2. Market Data")
-salary = st.sidebar.number_input("Median Salary ($)", min_value=5000, max_value=1000000, value=60000, step=1000)
-experience = st.sidebar.slider("Experience (Years)", 0, 30, 5)
-remote = st.sidebar.slider("Remote Work Ratio (%)", 0, 100, 20)
-selected_ai = st.sidebar.selectbox("AI Impact Level", get_options('AI Impact Level'))
-openings_curr = st.sidebar.number_input("Job Openings (2024)", min_value=0, value=1000, step=50)
-openings_proj = st.sidebar.number_input("Projected Openings (2030)", min_value=0, value=1200, step=50)
+        with col_viz1:
+            st.write("**Risk Distribution (Target Variable)**")
+            fig = px.histogram(df_original, x='Automation Risk (%)', nbins=20, title="Distribution of Automation Risk", color_discrete_sequence=['#636EFA'])
+            st.plotly_chart(fig, use_container_width=True)
 
-# --- 4. PREDICTION LOGIC ---
-st.write(f"## Analyzing Risk for: **{selected_job}**")
-st.write(f"**Industry:** {selected_industry} | **Location:** {selected_loc}")
+        with col_viz2:
+            st.write("**Correlation Heatmap**")
+            # Compute correlation on processed numeric data
+            corr = df_processed[feature_names + ['Risk_Grade']].corr()
+            fig, ax = plt.subplots(figsize=(8, 6))
+            sns.heatmap(corr, annot=False, cmap='coolwarm', ax=ax)
+            st.pyplot(fig)
 
-if st.button("🚀 Analyze Comprehensive Risk"):
-    
-    try:
-        # Prepare inputs
-        input_data = {
-            'Job Title': encoders['Job Title'].transform([selected_job])[0],
-            'Industry': encoders['Industry'].transform([selected_industry])[0],
-            'Job Status': encoders['Job Status'].transform([selected_status])[0],
-            'AI Impact Level': encoders['AI Impact Level'].transform([selected_ai])[0],
-            'Median Salary (USD)': salary,
-            'Required Education': encoders['Required Education'].transform([selected_edu])[0],
-            'Experience Required (Years)': experience,
-            'Job Openings (2024)': openings_curr,
-            'Projected Openings (2030)': openings_proj,
-            'Remote Work Ratio (%)': remote,
-            'Location': encoders['Location'].transform([selected_loc])[0]
-        }
-        
-        # Organize inputs in the correct order
-        final_input_array = []
-        for feature in feature_names:
-            final_input_array.append(input_data[feature])
-        
-        # Predict
-        prediction_grade = model.predict([final_input_array])[0]
-        
-        st.markdown("---")
-        
+    # ==========================================
+    # TAB 2: MODEL DEVELOPMENT (Requirement: 3 Models & Split)
+    # ==========================================
+    with tab2:
+        st.header("2. Model Training & Comparison")
+        st.info("Requirement: Train at least 3 models, split data, and evaluate using accuracy.")
+
+        st.write("Splitting dataset into Training (80%) and Testing (20%) sets.")
+
+        # Prepare X and y
+        X = df_processed[feature_names]
+        y = df_processed['Risk_Grade']
+
+        # Train/Test Split (Requirement)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+        # Train Models
+        with st.spinner("Training models..."):
+            trained_models = train_models(X_train, y_train)
+
+        # Evaluate Models
+        results = []
+        for name, model in trained_models.items():
+            y_pred = model.predict(X_test)
+            acc = accuracy_score(y_test, y_pred)
+            results.append({'Model': name, 'Accuracy': acc})
+
         # Display Results
-        if prediction_grade == 0:
-            st.balloons()
-            st.success(f"🌟 **VERY SAFE (0-20% Risk)**")
-            st.write(f"**{selected_job}** is highly secure. Automation is very unlikely.")
-            
-        elif prediction_grade == 1:
-            st.success(f"✅ **SAFE (20-40% Risk)**")
-            st.write(f"**{selected_job}** is a secure role. AI will likely be a tool, not a replacement.")
-            
-        elif prediction_grade == 2:
-            st.warning(f"⚠️ **MODERATE (40-60% Risk)**")
-            st.write(f"**{selected_job}** is a hybrid role. Routine tasks will be automated.")
-            
-        elif prediction_grade == 3:
-            st.error(f"🚨 **HIGH RISK (60-80% Risk)**")
-            st.write(f"**{selected_job}** is vulnerable. Significant automation is expected.")
-            
-        elif prediction_grade == 4:
-            st.error(f"🤖 **CRITICAL RISK (80-100% Risk)**")
-            st.write(f"**{selected_job}** is highly likely to be fully automated soon.")
+        results_df = pd.DataFrame(results).sort_values(by='Accuracy', ascending=False)
 
-    except Exception as e:
-        st.error(f"Prediction Error: {e}")
+        st.subheader("Model Performance")
+        col_res1, col_res2 = st.columns([1, 2])
+
+        with col_res1:
+            st.dataframe(results_df.style.highlight_max(axis=0, color='lightgreen'))
+            best_model_name = results_df.iloc[0]['Model']
+            st.success(f"🏆 Best Model: **{best_model_name}**")
+
+        with col_res2:
+            fig = px.bar(results_df, x='Model', y='Accuracy', title="Model Accuracy Comparison", color='Accuracy', color_continuous_scale='Viridis')
+            st.plotly_chart(fig, use_container_width=True)
+
+    # ==========================================
+    # TAB 3: PREDICTION (Requirement: Actionable Insights)
+    # ==========================================
+    with tab3:
+        st.header("3. Interactive Risk Analyzer")
+        st.info("Requirement: Interpret results and translate them into actionable insights.")
+
+        # Layout: Sidebar for inputs, Main area for result
+        with st.container():
+            col_input, col_pred = st.columns([1, 2])
+
+            with col_input:
+                st.subheader("Job Parameters")
+
+                def get_options(col_name):
+                    if col_name in encoders:
+                        return sorted(encoders[col_name].classes_)
+                    return ["Unknown"]
+
+                # Inputs
+                selected_job = st.selectbox("Job Title", get_options('Job Title'))
+                selected_industry = st.selectbox("Industry", get_options('Industry'))
+                selected_status = st.selectbox("Job Status", get_options('Job Status'))
+                selected_edu = st.selectbox("Required Education", get_options('Required Education'))
+                selected_loc = st.selectbox("Location", get_options('Location'))
+                selected_ai = st.selectbox("AI Impact Level", get_options('AI Impact Level'))
+
+                salary = st.number_input("Median Salary ($)", 5000, 1000000, 60000, 1000)
+                experience = st.slider("Experience (Years)", 0, 30, 5)
+                remote = st.slider("Remote Work Ratio (%)", 0, 100, 20)
+                openings_curr = st.number_input("Job Openings (2024)", 0, 100000, 1000)
+                openings_proj = st.number_input("Projected Openings (2030)", 0, 100000, 1200)
+
+                # User chooses model
+                model_choice = st.selectbox("Choose Model:", list(trained_models.keys()), index=0)
+                active_model = trained_models[model_choice]
+
+                analyze_btn = st.button("🚀 Analyze Risk", type="primary")
+
+            with col_pred:
+                st.subheader("Prediction Result")
+                if analyze_btn:
+                    try:
+                        # Encode Categorical Inputs
+                        input_dict = {
+                            'Job Title': encoders['Job Title'].transform([selected_job])[0],
+                            'Industry': encoders['Industry'].transform([selected_industry])[0],
+                            'Job Status': encoders['Job Status'].transform([selected_status])[0],
+                            'AI Impact Level': encoders['AI Impact Level'].transform([selected_ai])[0],
+                            'Required Education': encoders['Required Education'].transform([selected_edu])[0],
+                            'Location': encoders['Location'].transform([selected_loc])[0],
+                            'Median Salary (USD)': salary,
+                            'Experience Required (Years)': experience,
+                            'Job Openings (2024)': openings_curr,
+                            'Projected Openings (2030)': openings_proj,
+                            'Remote Work Ratio (%)': remote
+                        }
+
+                        # Create DataFrame for scaling
+                        input_df = pd.DataFrame([input_dict])
+
+                        # Ensure correct order of features
+                        final_input_df = input_df[feature_names].copy()
+
+                        # Identify which columns to scale that actually exist in the input
+                        cols_to_scale = [c for c in NUM_COLS_TO_SCALE if c in final_input_df.columns]
+
+                        # Scale using the imported constant to ensure consistency
+                        if cols_to_scale:
+                            final_input_df[cols_to_scale] = scaler.transform(final_input_df[cols_to_scale])
+
+                        # Predict
+                        prediction_grade = active_model.predict(final_input_df)[0]
+
+                        # Probabilities (if supported)
+                        probs = None
+                        if hasattr(active_model, "predict_proba"):
+                            probs = active_model.predict_proba(final_input_df)[0]
+
+                        # Interpret Results (Requirement: Interpret results)
+                        risk_map = {
+                            0: ("VERY SAFE (0-20%)", "success", "Automation is unlikely. This role requires high human intelligence/creativity."),
+                            1: ("SAFE (20-40%)", "success", "AI will likely be a productivity tool, not a replacement."),
+                            2: ("MODERATE (40-60%)", "warning", "Hybrid role. Routine tasks may be automated, but human oversight is needed."),
+                            3: ("HIGH RISK (60-80%)", "error", "Significant automation expected. Upskilling is recommended."),
+                            4: ("CRITICAL RISK (80-100%)", "error", "Highly likely to be fully automated. Consider pivoting to adjacent roles.")
+                        }
+
+                        label, color, desc = risk_map[prediction_grade]
+
+                        st.divider()
+
+                        if color == "success":
+                            st.balloons()
+                            st.success(f"### {label}")
+                        elif color == "warning":
+                            st.warning(f"### {label}")
+                        else:
+                            st.error(f"### {label}")
+
+                        st.markdown(f"**Insight:** {desc}")
+
+                        if probs is not None:
+                            st.write("---")
+                            st.write("**Confidence Scores:**")
+                            prob_df = pd.DataFrame(probs, index=["Very Safe", "Safe", "Moderate", "High Risk", "Critical Risk"], columns=["Probability"])
+                            st.bar_chart(prob_df)
+
+                    except Exception as e:
+                        st.error(f"Prediction Error: {e}")
+                else:
+                    st.info("👈 Adjust parameters and click 'Analyze Risk' to see the prediction.")
+
+if __name__ == "__main__":
+    main()
